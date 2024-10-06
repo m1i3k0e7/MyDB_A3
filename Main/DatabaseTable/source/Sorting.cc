@@ -52,7 +52,7 @@ vector<MyDB_PageReaderWriter> mergeIntoList(MyDB_BufferManagerPtr parent, vector
 											vector<MyDB_PageReaderWriter> rightIterVec, function<bool()> comparator, MyDB_RecordPtr lhs, MyDB_RecordPtr rhs) {
 	vector<MyDB_PageReaderWriter> res;
 	MyDB_PageHandle page = parent->getPage();
-	MyDB_PageReaderWriterPtr pageRW = make_shared<MyDB_PageReaderWriter>(parent);
+	MyDB_PageReaderWriterPtr pageRW = make_shared<MyDB_PageReaderWriter>(*parent);
 	int leftIndex = 0, rightIndex = 0;
 	MyDB_RecordIteratorAltPtr leftIter = leftIterVec[leftIndex].getIteratorAlt();
 	MyDB_RecordIteratorAltPtr rightIter = rightIterVec[rightIndex].getIteratorAlt();
@@ -63,7 +63,7 @@ vector<MyDB_PageReaderWriter> mergeIntoList(MyDB_BufferManagerPtr parent, vector
 		if (comparator()) {
 			if (!pageRW->append(lhs)) {
 				res.push_back(*pageRW);
-				pageRW = make_shared<MyDB_PageReaderWriter>(parent);
+				pageRW = make_shared<MyDB_PageReaderWriter>(*parent);
 				pageRW->append(lhs);
 			}
 			if (!leftIter->advance()) {
@@ -75,7 +75,7 @@ vector<MyDB_PageReaderWriter> mergeIntoList(MyDB_BufferManagerPtr parent, vector
 		} else {
 			if (!pageRW->append(rhs)) {
 				res.push_back(*pageRW);
-				pageRW = make_shared<MyDB_PageReaderWriter>(parent);
+				pageRW = make_shared<MyDB_PageReaderWriter>(*parent);
 				pageRW->append(rhs);
 			}
 			if (!rightIter->advance()) {
@@ -92,7 +92,7 @@ vector<MyDB_PageReaderWriter> mergeIntoList(MyDB_BufferManagerPtr parent, vector
 		leftIter->getCurrent(lhs);
 		if (!pageRW->append(lhs)) {
 			res.push_back(*pageRW);
-			pageRW = make_shared<MyDB_PageReaderWriter>(parent);
+			pageRW = make_shared<MyDB_PageReaderWriter>(*parent);
 			pageRW->append(lhs);
 		}
 		if (!leftIter->advance()) {
@@ -108,7 +108,7 @@ vector<MyDB_PageReaderWriter> mergeIntoList(MyDB_BufferManagerPtr parent, vector
 		rightIter->getCurrent(rhs);
 		if (!pageRW->append(rhs)) {
 			res.push_back(*pageRW);
-			pageRW = make_shared<MyDB_PageReaderWriter>(parent);
+			pageRW = make_shared<MyDB_PageReaderWriter>(*parent);
 			pageRW->append(rhs);
 		}
 		if (!rightIter->advance()) {

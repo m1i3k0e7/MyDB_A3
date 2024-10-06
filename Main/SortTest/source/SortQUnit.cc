@@ -65,6 +65,7 @@ int main () {
                         counter++;
                 }
                 QUNIT_IS_EQUAL (counter, 320000);
+				cout << "pass 1\n";
 
 		vector <MyDB_PageReaderWriter> allPages;
 		for (int i = 0; i < supplierTable.getNumPages (); i++) {
@@ -78,7 +79,7 @@ int main () {
                         counter++;
                 }
                 QUNIT_IS_EQUAL (counter, 320000);
-
+				cout << "pass 2\n";
 	}
 
 	{
@@ -143,6 +144,7 @@ int main () {
                         counter++;
                 }
                 QUNIT_IS_EQUAL (counter, 320000);
+				cout << "pass 3\n";
 
 		// put the supplier table into the catalog
 		outTable->putInCatalog (myCatalog);
@@ -191,6 +193,7 @@ int main () {
                 }
 
                 QUNIT_IS_EQUAL (matches, 320000);
+				cout << "pass 4\n";
 	}
 }
 
