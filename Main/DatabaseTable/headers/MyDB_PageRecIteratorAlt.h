@@ -31,7 +31,7 @@ public:
         void *getCurrentPointer ();
 
         // advance to the next record... returns true if there is a next record, and
-        // false if there are no more records to iterate over.  Not that this cannot
+        // false if there are no more records to iterate over.  Note that this cannot
         // be called until after getCurrent () has been called
         bool advance () override;
 

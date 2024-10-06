@@ -17,14 +17,18 @@ void sort (int runSize, MyDB_TableReaderWriter &sortMe, MyDB_TableReaderWriter &
 // sorted lists of records.  This function then merges all of those records into a list of anonymous pages,
 // and returns the list of anonymous pages to the caller.  The resulting list of anonymous pages is sorted.
 // Comparisons are performed using comparator, lhs, rhs
-vector <MyDB_PageReaderWriter> mergeIntoList (MyDB_BufferManagerPtr parent, MyDB_RecordIteratorAltPtr leftIter,
-        MyDB_RecordIteratorAltPtr rightIter, function <bool ()> comparator, MyDB_RecordPtr lhs, MyDB_RecordPtr rhs);
+// vector <MyDB_PageReaderWriter> mergeIntoList (MyDB_BufferManagerPtr parent, MyDB_RecordIteratorAltPtr leftIter,
+//         MyDB_RecordIteratorAltPtr rightIter, function <bool ()> comparator, MyDB_RecordPtr lhs, MyDB_RecordPtr rhs);
+vector <MyDB_PageReaderWriter> mergeIntoList (MyDB_BufferManagerPtr parent, vector<MyDB_PageReaderWriter> leftIterVec,
+        vector<MyDB_PageReaderWriter> rightIterVec, function <bool ()> comparator, MyDB_RecordPtr lhs, MyDB_RecordPtr rhs);
 
 // accepts a list of iterators called mergeUs.  It is assumed that these are all iterators over sorted lists
 // of records.  This function then merges all of those records and appends them to the file sortIntoMe.  If
 // all of the iterators are over sorted lists of records, then all of the records appended onto the end of
 // sortIntoMe will be sorted.  Comparisons are performed using comparator, lhs, rhs
-void mergeIntoFile (MyDB_TableReaderWriter &sortIntoMe, vector <MyDB_RecordIteratorAltPtr> &mergeUs,
-        function <bool ()> comparator, MyDB_RecordPtr lhs, MyDB_RecordPtr rhs);
+// void mergeIntoFile (MyDB_TableReaderWriter &sortIntoMe, vector <MyDB_RecordIteratorAltPtr> &mergeUs,
+//         function <bool ()> comparator, MyDB_RecordPtr lhs, MyDB_RecordPtr rhs);
+void mergeIntoFile (MyDB_TableReaderWriter &sortIntoMe, vector<vector<MyDB_RecordIteratorAltPtr>> &mergeUs,
+       function<bool()> comparator, MyDB_RecordPtr lhs, MyDB_RecordPtr rhs);
 
 #endif
