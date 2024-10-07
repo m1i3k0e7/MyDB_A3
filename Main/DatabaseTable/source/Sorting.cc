@@ -8,6 +8,7 @@
 #include "MyDB_TableReaderWriter.h"
 #include "Sorting.h"
 #include <vector>
+#include <iostream>
 
 using namespace std;
 
@@ -20,12 +21,13 @@ void mergeIntoFile(MyDB_TableReaderWriter &sortIntoMe, vector<vector<MyDB_Record
 	auto comp = [&](pair<MyDB_RecordIteratorAltPtr, int> a, pair<MyDB_RecordIteratorAltPtr, int> b) {
 		a.first->getCurrent(lhs);
 		b.first->getCurrent(rhs);
-		return comparator();
+		return !comparator();
 	};
 	priority_queue<pair<MyDB_RecordIteratorAltPtr, int>, vector<pair<MyDB_RecordIteratorAltPtr, int>>, decltype(comp)> pq(comp);
 	for (int i = 0; i < mergeUs.size(); i++) {
 		if (mergeUs[i].size() > 0) {
 			pq.push({mergeUs[i][0], i});
+			// cout << "run page nums: " << mergeUs[i].size() << endl;
 		}
 	}
 
@@ -34,12 +36,13 @@ void mergeIntoFile(MyDB_TableReaderWriter &sortIntoMe, vector<vector<MyDB_Record
 		pq.pop();
 		top.first->getCurrent(lhs);
 		sortIntoMe.append(lhs);
-
 		if (!top.first->advance()) {
 			indexs[top.second]++;
 			if (indexs[top.second] < mergeUs[top.second].size()) {
 				pq.push({mergeUs[top.second][indexs[top.second]], top.second});
 			}
+		} else {
+			pq.push({top.first, top.second});
 		}
 	}
 }
@@ -51,7 +54,6 @@ void mergeIntoFile(MyDB_TableReaderWriter &sortIntoMe, vector<vector<MyDB_Record
 vector<MyDB_PageReaderWriter> mergeIntoList(MyDB_BufferManagerPtr parent, vector<MyDB_PageReaderWriter> leftIterVec,
 											vector<MyDB_PageReaderWriter> rightIterVec, function<bool()> comparator, MyDB_RecordPtr lhs, MyDB_RecordPtr rhs) {
 	vector<MyDB_PageReaderWriter> res;
-	MyDB_PageHandle page = parent->getPage();
 	MyDB_PageReaderWriterPtr pageRW = make_shared<MyDB_PageReaderWriter>(*parent);
 	int leftIndex = 0, rightIndex = 0;
 	MyDB_RecordIteratorAltPtr leftIter = leftIterVec[leftIndex].getIteratorAlt();
@@ -127,14 +129,16 @@ void sort(int runSize, MyDB_TableReaderWriter &sortMe, MyDB_TableReaderWriter &s
 	const int numPages = sortMe.getNumPages();
 	vector<vector<MyDB_RecordIteratorAltPtr>> sortedPagesRuns;
 
+	// cout << "total pages num: " << numPages << endl;
+	// cout << "runSize: " << runSize << endl;
 	for (int i = 0; i < numPages; i += runSize) {
 		vector<vector<MyDB_PageReaderWriter>> pagesRun;
 		// load a run of pages into RAM
 		for (int j = 0; j < runSize && i + j < numPages; j++) {
 			MyDB_PageReaderWriter tempPageRW = sortMe[i + j];
 			// Sort each individual page in the vector
-			vector<MyDB_PageReaderWriter> tempVec;
-			tempVec.push_back(*(tempPageRW.sort(comparator, lhs, rhs)));
+			tempPageRW.sortInPlace(comparator, lhs, rhs);
+			vector<MyDB_PageReaderWriter> tempVec({tempPageRW});
 			pagesRun.push_back(tempVec);
 		}
 
@@ -150,12 +154,14 @@ void sort(int runSize, MyDB_TableReaderWriter &sortMe, MyDB_TableReaderWriter &s
 			for (int i = 0; i < pagesRun.size(); i += 2) {
 				if (i == pagesRun.size() - 1) {
 					newPagesRun.push_back(pagesRun[i]);
-					break;
+					continue;
 				}
 				vector<MyDB_PageReaderWriter> page1 = pagesRun[i], page2 = pagesRun[i + 1];
 				newPagesRun.push_back(mergeIntoList(sortMe.getBufferMgr(), page1, page2, comparator, lhs, rhs));
 			}
 			pagesRun = newPagesRun;
+			// cout << "page size: " << pagesRun.size() << endl;
+			// cout << "pages num: " << pagesRun[0].size() << endl;
 		}
 		vector<MyDB_RecordIteratorAltPtr> tempRecIterAltVec;
 		for (MyDB_PageReaderWriter &pageRW : pagesRun[0]) {

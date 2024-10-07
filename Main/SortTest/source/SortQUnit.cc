@@ -135,16 +135,16 @@ int main () {
 		sort (64, supplierTable, outputTable, myComp, rec1, rec2);
 		system ("date");
 
-                MyDB_RecordIteratorAltPtr myIter = outputTable.getIteratorAlt ();
+		MyDB_RecordIteratorAltPtr myIter = outputTable.getIteratorAlt ();
 
-                // there should be 320000 records
-                int counter = 0;
-                while (myIter->advance ()) {
-                        myIter->getCurrent (rec1);
-                        counter++;
-                }
-                QUNIT_IS_EQUAL (counter, 320000);
-				cout << "pass 3\n";
+		// there should be 320000 records
+		int counter = 0;
+		while (myIter->advance ()) {
+			myIter->getCurrent (rec1);
+			counter++;
+		}
+		QUNIT_IS_EQUAL (counter, 320000);
+		cout << "pass 3\n";
 
 		// put the supplier table into the catalog
 		outTable->putInCatalog (myCatalog);
@@ -170,30 +170,29 @@ int main () {
 		function <bool ()> myComp = buildRecordComparator (rec1, rec2, "[acctbal]");
 
 		// get two iterators
-                MyDB_RecordIteratorAltPtr myIterOne = sortedTable.getIteratorAlt ();
-                MyDB_RecordIteratorAltPtr myIterTwo = otherSortedTable.getIteratorAlt ();
+		MyDB_RecordIteratorAltPtr myIterOne = sortedTable.getIteratorAlt ();
+		MyDB_RecordIteratorAltPtr myIterTwo = otherSortedTable.getIteratorAlt ();
 
 		// make sure the results are the same
-		int matches = 0;
-                while (myIterOne->advance ()) {
+		int matches = 0, matches2 = 0;
+		while (myIterOne->advance ()) {
 			myIterTwo->advance ();
 
 			// get the two records
-                        myIterOne->getCurrent (rec1);
-                        myIterTwo->getCurrent (rec2);
+			myIterOne->getCurrent (rec1);
+			myIterTwo->getCurrent (rec2);
 
-			cout << rec1 << "\n";
-
+			// cout << "rec1: " << rec1 << "\n";
+			// cout << "rec2: " << rec2 << endl;
 			if (!myComp ()) {
-                        	myIterOne->getCurrent (rec2);
-                        	myIterTwo->getCurrent (rec1);
+				myIterOne->getCurrent (rec2);
+				myIterTwo->getCurrent (rec1);
 				if (!myComp ())
 					matches++;
 			}
-                }
-
-                QUNIT_IS_EQUAL (matches, 320000);
-				cout << "pass 4\n";
+		}
+		QUNIT_IS_EQUAL (matches, 320000);
+		cout << "pass 4\n";
 	}
 }
 

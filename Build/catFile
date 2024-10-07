@@ -19,7 +19,7 @@
 |supplierSorted.comment.type|string|
 |supplierSorted.fileName|supplierSorted.bin|
 |supplierSorted.fileType|heap|
-|supplierSorted.lastPage|0|
+|supplierSorted.lastPage|382|
 |supplierSorted.name.type|string|
 |supplierSorted.nationkey.type|int|
 |supplierSorted.numTuples|0|
