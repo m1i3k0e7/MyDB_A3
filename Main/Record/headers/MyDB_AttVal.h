@@ -4,6 +4,8 @@
 
 #include <memory>
 #include <string>
+#include <string.h>
+#include <stdio.h>
 
 // create a smart pointer for the catalog
 using namespace std;

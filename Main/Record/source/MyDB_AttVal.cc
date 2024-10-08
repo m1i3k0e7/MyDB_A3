@@ -6,6 +6,7 @@
 #include "MyDB_AttVal.h"
 #include <string>
 #include <string.h>
+#include <stdio.h>
 
 using namespace std;
 
